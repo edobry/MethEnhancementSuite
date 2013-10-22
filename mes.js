@@ -16,7 +16,6 @@
 	})();
 
 	MES.showRate = function(rate) {
-		debugger;
 		var modal = S("#rateModal");
 		if(modal.length == 0) 
 			modal = $("<div>").attr("id", "rateModal").css({
@@ -34,8 +33,13 @@
 		modal.text("Rate: " + pretty_int(rate)).show();
 	};
 
+	S("#clickers").find(".s_div").hover(function (e){
+		var item = pdro.clickers[$(this)[0].id];
+		MES.showRate(item.cost/item.rps);
+	}, function (e) { S("#rateModal").hide(); });
+		
 	S("#sellers").find(".s_div").hover(function (e){
-		var item = pd.sellers[$(this)[0].id];
+		var item = pdro.sellers[$(this)[0].id];
 		MES.showRate(item.cost/item.rps);
 	}, function (e) { S("#rateModal").hide(); });
 })($);
