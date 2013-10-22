@@ -33,13 +33,24 @@
 		modal.text("Rate: " + pretty_int(rate)).show();
 	};
 
-	S("#clickers").find(".s_div").hover(function (e){
-		var item = pdro.clickers[$(this)[0].id];
-		MES.showRate(item.cost/item.rps);
-	}, function (e) { S("#rateModal").hide(); });
-		
-	S("#sellers").find(".s_div").hover(function (e){
-		var item = pdro.sellers[$(this)[0].id];
-		MES.showRate(item.cost/item.rps);
-	}, function (e) { S("#rateModal").hide(); });
+	MES.initRate = function () {
+		for(var i in arguments){
+			var tab = arguments[i];
+			var div = S("#" + tab);
+			if(div.length > 0)
+				div.find(".s_div").hover((function (){
+					var key = tab;
+					return function (e){
+						var item = pdro[key][$(this)[0].id];
+						MES.showRate(item.cost/item.rps);
+					};
+				})(), function (e) { S("#rateModal").hide(); });
+		}
+	};
+
+	MES.init = function () {
+		MES.initRate("clickers", "sellers");
+	};
+
+	MES.init();
 })($);
