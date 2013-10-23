@@ -15,6 +15,8 @@
 	    return select;
 	})();
 
+	MES.pd = {};
+
 	MES.showRate = function(rate) {
 		var modal = S("#rateModal");
 		if(modal.length == 0) 
@@ -41,14 +43,20 @@
 				div.find(".s_div").hover((function (){
 					var key = tab;
 					return function (e){
-						var item = pdro[key][$(this)[0].id];
+						var item = MES.pd[key][$(this)[0].id];
 						MES.showRate(item.cost/item.rps);
 					};
 				})(), function (e) { S("#rateModal").hide(); });
 		}
 	};
 
+	MES.pdExploit = function () {
+		eval(Game.toString().replace("var pd", "this.pd").replace("Game", "MESGame"));
+		MES.pd = new MESGame().pd;
+	};
+
 	MES.init = function () {
+		MES.pdExploit();
 		MES.initRate("clickers", "sellers");
 	};
 
