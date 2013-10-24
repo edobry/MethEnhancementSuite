@@ -41,14 +41,100 @@
 				div.find(".s_div").hover((function (){
 					var key = tab;
 					return function (e){
-						var item = pdro[key][$(this)[0].id];
+						var item = gm.pd[key][$(this)[0].id];
 						MES.showRate(item.cost/item.rps);
 					};
 				})(), function (e) { S("#rateModal").hide(); });
 		}
 	};
 
+	MES.Exploit = function () {
+		gm.do_save();
+		eval(Game.toString().replace("var pd", "var pd = this.pd"));
+		window.gm = new Game();
+
+		[tmr, sec_tmr, save_tmr, event_tmr, ver_tmr].forEach(clearInterval);
+	    tmr = setInterval("gm.tick()", tick_ms);
+	    sec_tmr = setInterval("gm.sec_tick()", 1000);
+	    save_tmr = setInterval("gm.do_save()", 30000);
+	    event_tmr = setInterval("gm.check_events()", 120000);
+	    ver_tmr = setInterval("gm.check_version()", 620000);
+	    gm.do_load();
+	    message('Welcome to '+gm.get_title()+', bitch.');
+
+	    $('#make_btn').off().click(function(e) { 
+	        gm.do_make_click();
+	        var elc = $('.make_up:first').clone()
+	        elc.html('+'+pretty_int(gm.get_click_make_amount()));
+	        $('#make_div').append(elc);
+	        elc.show();
+	        elc.offset({left:e.pageX-30, top:e.pageY-50});
+	        var end_y = e.pageY-150;
+	        elc.css('opacity',100);
+	        if(last_float == 1) { 
+	            var this_float = e.pageX;
+	            last_float = 0;
+	        } else { 
+	            var this_float = e.pageX - 60;
+	            last_float = 1; 
+	        }
+	        elc.animate({'top':end_y.toString()+'px', 'opacity':0, 'left':this_float.toString()+'px'}, 750, function() { 
+	            $(this).remove();
+	        });
+	    });
+	    $('#sell_btn').off().click(function(e) { 
+	        var sale = gm.do_sell_click();
+	        if(sale == 0) { 
+	            return;
+	        }
+	        var elc = $('.sell_up:first').clone()
+	        elc.html('$'+pretty_int(sale*gm.get_widget_roi()));
+	        $('#sell_div').append(elc);
+	        elc.show();
+	        elc.offset({left:e.pageX-30, top:e.pageY-50});
+	        var end_y = e.pageY-150;
+	        elc.css('opacity',100);
+	        if(last_float == 1) { 
+	            var this_float = e.pageX;
+	            last_float = 0;
+	        } else { 
+	            var this_float = e.pageX - 60;
+	            last_float = 1; 
+	        }
+	        elc.animate({'top':end_y.toString()+'px', 'opacity':0, 'left':this_float.toString()+'px'}, 750, function() { 
+	            $(this).remove();
+	        });
+	    });
+	    $('#sell_btn').off().click(function(e) { 
+	        var sale = gm.do_sell_click();
+	        if(sale == 0) { 
+	            return;
+	        }
+	        var elc = $('.sell_up:first').clone()
+	        elc.html('$'+pretty_int(sale*gm.get_widget_roi()));
+	        $('#sell_div').append(elc);
+	        elc.show();
+	        elc.offset({left:e.pageX-30, top:e.pageY-50});
+	        var end_y = e.pageY-150;
+	        elc.css('opacity',100);
+	        if(last_float == 1) { 
+	            var this_float = e.pageX;
+	            last_float = 0;
+	        } else { 
+	            var this_float = e.pageX - 60;
+	            last_float = 1; 
+	        }
+	        elc.animate({'top':end_y.toString()+'px', 'opacity':0, 'left':this_float.toString()+'px'}, 
+	            750, 
+	            function() { 
+	                $(this).remove();
+	            }
+	        );
+    	});
+	};
+
 	MES.init = function () {
+		MES.Exploit();
 		MES.initRate("clickers", "sellers");
 	};
 
