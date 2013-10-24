@@ -15,7 +15,7 @@
 	    return select;
 	})();
 
-	MES.pd = {};
+	MES.Game = {};
 
 	MES.showRate = function(rate) {
 		var modal = S("#rateModal");
@@ -43,20 +43,37 @@
 				div.find(".s_div").hover((function (){
 					var key = tab;
 					return function (e){
-						var item = MES.pd[key][$(this)[0].id];
+						var item = MES.Game.pd[key][$(this)[0].id];
 						MES.showRate(item.cost/item.rps);
 					};
 				})(), function (e) { S("#rateModal").hide(); });
 		}
 	};
 
-	MES.pdExploit = function () {
-		eval(Game.toString().replace("var pd", "this.pd").replace("Game", "MESGame"));
-		MES.pd = new MESGame().pd;
+	MES.Exploit = function () {
+		eval(Game.toString().replace("var pd", "var pd = this.pd").replace("Game", "MESGame"));
+		MES.Game = new MESGame();
+		gm.do_save();
+		MES.Game.do_load();
+
+		for(var key in gm){
+			var func = gm[key];
+			if(typeof(func) !== 'function') continue;
+
+			gm[key] = (function(){
+				var old = func;
+				var funcName = key;
+				return function (){
+					debugger;
+					MES.Game[funcName](arguments);
+					old(arguments);
+				};
+			})()
+		}
 	};
 
 	MES.init = function () {
-		MES.pdExploit();
+		MES.Exploit();
 		MES.initRate("clickers", "sellers");
 	};
 
