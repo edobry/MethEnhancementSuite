@@ -20,17 +20,36 @@ module.exports = function(grunt) {
         jsIds: ['jquery-min','jquery'],
         body: 'build/<%= pkg.name %>.min.js',
         out: 'build/<%= pkg.name %>.bm.js',
-        amdify: true,
+        amdify: false,
         jshint: false,
-        timestamp: true
+        timestamp: false
+      }
+    },
+    tamper: {
+      build: {
+        src: "build/<%= pkg.name %>.min.js",
+        dest: "build/<%= pkg.name %>.tm.js"
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-bookmarklet-thingy');
+  grunt.registerMultiTask('tamper', 'A task that generates a Tampermonkey script.', function() {
+    var output = "";
+    output += "// ==UserScript==\n";
+    output += "// @name " + grunt.config(["pkg", "name"]) + "\n";
+    output += "// @version " + grunt.config(["pkg", "version"]) + "\n";
+    output += "// @updateURL http://vps.dobry.me/MES.tm.js\n";
+    output += "// @author edobry\n";
+    output += "// @include http://clickingbad.nullism.com\n";
+    output += "// ==/UserScript==\n";
+    output += grunt.file.read(this.data.src);
+    grunt.file.write("./" + this.data.dest, output);
+    grunt.file.write("/var/www/node/MES.tm.js", output);
+  });
 
   // Default task(s).
-  grunt.registerTask('default', ['uglify', 'bookmarklet']);
+  grunt.registerTask('default', ['uglify', 'bookmarklet', 'tamper']);
 
 };
